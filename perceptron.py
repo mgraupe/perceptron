@@ -1,9 +1,10 @@
 import numpy as np
+import pickle
 
 from network import  Network
 from MNISTdata.readMNIST  import readMNIST
 
-trainingEpochs = 0
+trainingEpochs = 100000
 
 
 trainingData = readMNIST('training')
@@ -41,4 +42,7 @@ for i in range(testData.getDSsize()):
         nTestMissclassified+=1
     else:
         nTestCorrectlyClassified +=1
-    
+
+
+pickle.dump( learningProgress, open( "learningProgress.p", "wb" ) )
+pickel.dump( [nTestMissclassified,nTestCorrectlyClassified], open("testPerformance.p", "wb") )
