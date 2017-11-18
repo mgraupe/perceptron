@@ -17,6 +17,8 @@ testData = readMNIST('testing')
 imgDims = trainingData.getImgDimensions()
 perceptron = Network(imgDims[0]*imgDims[1],len(classificationNumbers),learningRate)
 
+print 'Train on %s samples, test on %s samples.' % (trainingData.getDSsize(), testData.getDSsize())
+
 learningProgress = []
 # learning 
 for n in range(trainingEpochs):
