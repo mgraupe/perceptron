@@ -14,12 +14,13 @@ class Network(object):
         #print np.shape(self.biases), np.shape(self.weights)
     
     def getOutput(self,a):
-        return np.sign(np.dot(self.weights,a))
+        aPrime = np.concatenate((([1]),a))
+        return np.sign(np.dot(self.weights,aPrime))
     
     def updateWeights(self,desiredOutput,inputPattern):
         #for i in range(self.outputLayerSize):
-        self.weights = self.weights + self.eta*desiredOutput*inputPattern
-        #self.biases[i]  = self.biases[i]  + self.eta*(desiredOutput[i]-actualOutput[i])
-        
+        inputPatternPrime = np.concatenate((([1]),inputPattern))
+        self.weights = self.weights + self.eta*desiredOutput*inputPatternPrime
+
     
     

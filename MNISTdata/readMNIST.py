@@ -20,7 +20,7 @@ class readMNIST:
             fname_img = os.path.join(path, 'MNISTdata/t10k-images.idx3-ubyte')
             fname_lbl = os.path.join(path, 'MNISTdata/t10k-labels.idx1-ubyte')
         else:
-            raise ValueError, "dataset must be 'testing' or 'training'"
+            raise ValueError("dataset must be 'testing' or 'training'")
 
         # Load everything in some numpy arrays
         with open(fname_lbl, 'rb') as flbl:
@@ -35,7 +35,7 @@ class readMNIST:
         if idx < len(self.lbl):
             return (self.lbl[idx], self.img[idx])
         else:
-            print 'index out of data-set range'
+            print('index out of data-set range')
     
     def getImgDimensions(self):
         sampleImg = self.getBinImg(0)
@@ -49,7 +49,7 @@ class readMNIST:
             imgb = np.array(imgb,dtype=int)
             return (self.lbl[idx], imgb)
         else:
-            print 'index out of data-set range'
+            print('index out of data-set range')
             
     def getDSsize(self):
         return len(self.lbl)
