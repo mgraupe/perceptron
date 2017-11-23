@@ -2,13 +2,13 @@ import numpy as np
 import pickle
 
 from network import  Network
-from MNISTdata.readMNIST  import readMNIST
 
 # parameters
-trainingEpochs = 50
+trainingEpochs = 100000
 learningRate   = 0.2
-classANumbers = [0]
-classBNumbers = [7]
+initalWeights  = np.array([0.,1.,0.5])
+#initalWeights  = np.array([1000.,10000.,5000.])
+inputPoints = ([1.,-2.,1.],[1.,1.,1.],[1.,1.5,-0.5],[-1.,-2.,-1.],[-1.,-1.,-1.5],[-1.,2.,-2.])
 
 def isDesiredOutput(currentOut,number):
     desiredOut = 1 if number in classANumbers else -1
@@ -17,55 +17,25 @@ def isDesiredOutput(currentOut,number):
     else:
         return [False,desiredOut]
 
-
-classificationNumbers =classANumbers + classBNumbers
-
-# read data 
-trainingData = readMNIST('training')
-testData = readMNIST('testing')
-
 # create network
-imgDims = trainingData.getImgDimensions()
-perceptron = Network(imgDims[0]*imgDims[1],1,learningRate)
-
-print 'Train on %s samples, test on %s samples.' % (trainingData.getDSsize(), testData.getDSsize())
+perceptron = Network(2,1,learningRate,initalWeights)
 
 learningProgress = []
 # learning 
 for n in range(trainingEpochs):
     nMissclassified = 0
     nCorrectlyClassified = 0
-    for i in range(trainingData.getDSsize()):
-        img = trainingData.getBinImg(i)
-        if img[0] in classificationNumbers:
-            currentOutput = perceptron.getOutput(np.ndarray.flatten(img[1]))
-            evaluation = isDesiredOutput(currentOutput, img[0] )
-            if evaluation[0]:
-                nCorrectlyClassified += 1
-            else:
-                nMissclassified+=1
-                perceptron.updateWeights(evaluation[1],np.ndarray.flatten(img[1]))
+    for i in range(len(inputPoints)):
+        currentOutput = perceptron.getOutput(inputPoints[i][1:])
+        if currentOutput == inputPoints[i][0]:
+            nCorrectlyClassified += 1
+        else:
+            nMissclassified+=1
+            perceptron.updateWeights(inputPoints[i][0],inputPoints[i][1:])
     # save performance of learning epoch
     learningProgress.append([nMissclassified,nCorrectlyClassified])
-    print 'Learning epoch %s/%s ..... %s %% error rate' % ((n+1),trainingEpochs,nMissclassified*100./float(trainingData.getDSsize()))
+    print 'Learning epoch %s/%s ..... %s %% error rate' % ((n+1),trainingEpochs,nMissclassified*100./float(len(inputPoints)))
     if nMissclassified == 0:
         break
     
-# testing
-nTestMissclassified = 0
-nTestCorrectlyClassified = 0
-for i in range(testData.getDSsize()):
-    img = testData.getBinImg(i)
-    if img[0] in classificationNumbers:
-        currentOutput = perceptron.getOutput(np.ndarray.flatten(img[1]))
-        evaluation = isDesiredOutput(currentOutput, img[0])
-        if evaluation[0]:
-            nTestCorrectlyClassified += 1
-        else:
-            nTestMissclassified+=1
-
-print 'Test data set ..... %s %% error rate' % (nTestMissclassified*100./float(testData.getDSsize()))
-
-
-pickle.dump( learningProgress, open( "learningProgress.p", "wb" ) )
-pickle.dump( [nTestMissclassified,nTestCorrectlyClassified], open("testPerformance.p", "wb") )
+print perceptron.weights

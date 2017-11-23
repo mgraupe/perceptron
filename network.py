@@ -3,12 +3,15 @@ import numpy as np
 
 class Network(object):
 
-    def __init__(self, inputLayerSize, outputLayerSize, learningRate):
+    def __init__(self, inputLayerSize, outputLayerSize, learningRate,initialWeights=None):
         #self.num_layers = len(sizes)
         #self.sizes = sizes
         self.eta     = learningRate
         #self.biases  = np.random.rand(outputLayerSize)
-        self.weights = np.random.rand(outputLayerSize,inputLayerSize+1)
+        if not (initialWeights is None):
+            self.weights = initialWeights
+        else:
+            self.weights = np.random.rand(outputLayerSize,inputLayerSize+1)
         self.inputLayerSize  = inputLayerSize
         self.outputLayerSize = outputLayerSize 
         #print np.shape(self.biases), np.shape(self.weights)
