@@ -7,8 +7,8 @@ from MNISTdata.readMNIST  import readMNIST
 # parameters
 trainingEpochs = 50
 learningRate   = 0.2
-classANumbers = [0]
-classBNumbers = [7]
+classANumbers = [1]
+classBNumbers = [2]
 
 def isDesiredOutput(currentOut,number):
     desiredOut = 1 if number in classANumbers else -1
@@ -28,7 +28,7 @@ testData = readMNIST('testing')
 imgDims = trainingData.getImgDimensions()
 perceptron = Network(imgDims[0]*imgDims[1],1,learningRate)
 
-print 'Train on %s samples, test on %s samples.' % (trainingData.getDSsize(), testData.getDSsize())
+print 'Train on %s samples, test on %s samples.' % (trainingData.getDSsize()*len(classificationNumbers)/10, testData.getDSsize()*len(classificationNumbers)/10)
 
 learningProgress = []
 # learning 
@@ -47,7 +47,7 @@ for n in range(trainingEpochs):
                 perceptron.updateWeights(evaluation[1],np.ndarray.flatten(img[1]))
     # save performance of learning epoch
     learningProgress.append([nMissclassified,nCorrectlyClassified])
-    print 'Learning epoch %s/%s ..... %s %% error rate' % ((n+1),trainingEpochs,nMissclassified*100./float(trainingData.getDSsize()))
+    print 'Learning epoch %s/%s ..... %s %% error rate in %s samples' % ((n+1),trainingEpochs,nMissclassified*100./float(nCorrectlyClassified+nMissclassified),(nCorrectlyClassified+nMissclassified))
     if nMissclassified == 0:
         break
     
@@ -64,7 +64,7 @@ for i in range(testData.getDSsize()):
         else:
             nTestMissclassified+=1
 
-print 'Test data set ..... %s %% error rate' % (nTestMissclassified*100./float(testData.getDSsize()))
+print 'Test data set ..... %s %% error rate in %s samples' % (nTestMissclassified*100./float(nTestCorrectlyClassified+nTestMissclassified),(nTestCorrectlyClassified+nTestMissclassified))
 
 
 pickle.dump( learningProgress, open( "learningProgress.p", "wb" ) )
