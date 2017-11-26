@@ -7,7 +7,7 @@ from network import  Network
 from MNISTdata.readMNIST  import readMNIST
 
 # parameters
-trainingEpochs = 100
+trainingEpochs = 500
 learningRate   = 0.2
 pairs = []
 voteWeights = np.zeros((10,45))
@@ -44,7 +44,8 @@ network = Network(imgDims[0]*imgDims[1],len(pairs),learningRate)
 print 'Train on %s samples, test on %s samples.' % (trainingData.getDSsize(), testData.getDSsize())
 
 learningProgress = []
-pairErrorRate = 45*[0]
+pairErrorRate = 45*[1]
+pairErrorRate.append(45*[1])
 # learning 
 for n in range(trainingEpochs):
     nPairMissclassified = np.zeros(len(pairs))
