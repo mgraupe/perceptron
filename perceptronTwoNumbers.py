@@ -1,5 +1,6 @@
 import numpy as np
 import pickle
+import itertools
 
 from network import  Network
 from MNISTdata.readMNIST  import readMNIST
@@ -7,8 +8,8 @@ from MNISTdata.readMNIST  import readMNIST
 # parameters
 trainingEpochs = 50
 learningRate   = 0.2
-classANumbers = [1]
-classBNumbers = [2]
+classANumbers = [7]
+classBNumbers = [9]
 
 def isDesiredOutput(currentOut,number):
     desiredOut = 1 if number in classANumbers else -1
