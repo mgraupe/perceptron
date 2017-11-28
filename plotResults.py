@@ -11,6 +11,7 @@ for p in itertools.combinations(range(10),2):
     pairs.append(p)
 
 data = pickle.load( open('learningProgress.p'))
+test = pickle.load( open('testPerformance.p'))
 
 errorRate = []
 pairErrors = []
@@ -83,7 +84,8 @@ ax0.set_title('Number recognition for range [0,...,9]')
 # diplay of data
 #ax0.axhline(y=0,ls='--',color='0.5',lw=2)
 #ax0.axvline(x=0,ls='--',color='0.5',lw=2)
-ax0.plot(errorRate)
+ax0.plot(501,test[0]*100./(test[0]+test[1]),'o',label='performance on test set')
+ax0.plot(errorRate,label='learning on training set')
 #ax0.plot(x,cosy,label='cos')
 
 # removes upper and right axes

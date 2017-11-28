@@ -82,6 +82,7 @@ for n in range(trainingEpochs):
 # testing
 nTestMissclassified = 0
 nTestCorrectlyClassified = 0
+numbersMissclassified = []
 for i in range(testData.getDSsize()):
     img = testData.getBinImg(i)
     currentOutput = network.getOutput(np.ndarray.flatten(img[1]))
@@ -90,6 +91,7 @@ for i in range(testData.getDSsize()):
         nTestCorrectlyClassified += 1
     else:
         nTestMissclassified += 1
+        numbersMissclassified.append(img[0])
 
 print 'Test data set ..... %s %% error rate in %s samples' % (nTestMissclassified*100./float(nTestCorrectlyClassified+nTestMissclassified),(nTestCorrectlyClassified+nTestMissclassified))
 
