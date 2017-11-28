@@ -4,6 +4,7 @@ import pickle
 import matplotlib.gridspec as gridspec
 from matplotlib import rcParams
 import itertools
+import matplotlib
 
 pairs = []
 for p in itertools.combinations(range(10),2):
@@ -97,19 +98,24 @@ ax0.xaxis.set_ticks_position('bottom')
 # legends and labels
 plt.legend(loc=1,frameon=False)
 
-plt.xlabel('traning epochs')
+plt.xlabel('training epochs')
 plt.ylabel('error rate (%)')
 
 # first sub-plot #######################################################
 ax0 = plt.subplot(gs[1])
 
 # title
-ax0.set_title('Pair-wise classification [0,1], [0,2], ... ')
+ax0.set_title('Pairwise classification [0,1], [0,2], ... ')
 
 # diplay of data
 #ax0.axhline(y=0,ls='--',color='0.5',lw=2)
 #ax0.axvline(x=0,ls='--',color='0.5',lw=2)
+
+#cmap = matplotlib.cm.hsv
+#norm = matplotlib.colors.Normalize(vmin=0, vmax=45)
+
 for i in range(45):
+    #col = cmap(norm(i))
     if pairErrors[-1,i]> 2.:
         ax0.plot(pairErrors[:,i],label='[%s,%s]' % (pairs[i][0],pairs[i][1]))
     else:
@@ -133,7 +139,7 @@ leg = plt.gca().get_legend()
 ltext  = leg.get_texts()
 plt.setp(ltext, fontsize=8)
 
-plt.xlabel('traning epochs')
+plt.xlabel('training epochs')
 plt.ylabel('error rate (%)')
 
 ## save figure ############################################################
