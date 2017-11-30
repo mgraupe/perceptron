@@ -7,7 +7,7 @@ from network import  Network
 from MNISTdata.readMNIST  import readMNIST
 
 # parameters
-trainingEpochs = 500
+trainingEpochs = 2
 learningRate   = 0.2
 pairs = []
 voteWeights = np.zeros((10,45))
@@ -98,3 +98,4 @@ print 'Test data set ..... %s %% error rate in %s samples' % (nTestMissclassifie
 
 pickle.dump( learningProgress, open( "learningProgress.p", "wb" ) )
 pickle.dump( [nTestMissclassified,nTestCorrectlyClassified], open("testPerformance.p", "wb") )
+pickle.dump( numbersMissclassified, open('numbersMissclassified.p', 'wb'))
