@@ -7,7 +7,7 @@ from network import  Network
 from MNISTdata.readMNIST  import readMNIST
 
 # parameters
-trainingEpochs = 2
+trainingEpochs = 10
 learningRate   = 0.2
 pairs = []
 voteWeights = np.zeros((10,45))

@@ -4,10 +4,9 @@ import pickle
 from network import  Network
 
 # parameters
-trainingEpochs = 100000
+trainingEpochs = 5
 learningRate   = 0.2
 initalWeights  = np.array([0.,1.,0.5])
-#initalWeights  = np.array([1000.,10000.,5000.])
 inputPoints = ([1.,-2.,1.],[1.,1.,1.],[1.,1.5,-0.5],[-1.,-2.,-1.],[-1.,-1.,-1.5],[-1.,2.,-2.])
 
 def isDesiredOutput(currentOut,number):

@@ -31,7 +31,7 @@ pairErrors = np.asarray(pairErrors)
 
 
 fig_width = 6 # width in inches
-fig_height = 8  # height in inches
+fig_height = 12  # height in inches
 fig_size =  [fig_width,fig_height]
 params = {'axes.labelsize': 14,
           'axes.titlesize': 13,
@@ -57,7 +57,7 @@ fig = plt.figure()
 
 
 # define sub-panel grid and possibly width and height ratios
-gs = gridspec.GridSpec(2, 1,
+gs = gridspec.GridSpec(3, 1,
                        #width_ratios=[1,1.2],
                        #height_ratios=[1,1]
                        )
@@ -66,7 +66,7 @@ gs = gridspec.GridSpec(2, 1,
 gs.update(wspace=0.3,hspace=0.4)
 
 # possibly change outer margins of the figure
-plt.subplots_adjust(left=0.12, right=0.95, top=0.92, bottom=0.1)
+plt.subplots_adjust(left=0.13, right=0.95, top=0.95, bottom=0.06)
 
 # sub-panel enumerations
 #plt.figtext(0.06, 0.92, 'A',clip_on=False,color='black', weight='bold',size=22)
@@ -136,6 +136,48 @@ ax0.xaxis.set_ticks_position('bottom')
 
 # legends and labels
 plt.legend(loc=(0.85,0.6),frameon=False)
+
+leg = plt.gca().get_legend()
+ltext  = leg.get_texts()
+plt.setp(ltext, fontsize=8)
+
+plt.xlabel('training epochs')
+plt.ylabel('error rate (%)')
+
+# first sub-plot #######################################################
+ax2 = plt.subplot(gs[2])
+
+# title
+ax2.set_title('Pairwise classification [0,1], [0,2], ... ')
+
+# diplay of data
+#ax0.axhline(y=0,ls='--',color='0.5',lw=2)
+#ax0.axvline(x=0,ls='--',color='0.5',lw=2)
+
+#cmap = matplotlib.cm.hsv
+#norm = matplotlib.colors.Normalize(vmin=0, vmax=45)
+
+for i in range(45):
+    #col = cmap(norm(i))
+    if pairErrors[40,i] == 0.:
+        ax2.plot(pairErrors[:,i],label='[%s,%s]' % (pairs[i][0],pairs[i][1]))
+    #else:
+    #    ax2.plot(pairErrors[:,i])
+
+#ax0.plot(x,cosy,label='cos')
+
+# removes upper and right axes
+# and moves left and bottom axes away
+ax2.spines['top'].set_visible(False)
+ax2.spines['right'].set_visible(False)
+ax2.spines['bottom'].set_position(('outward', 10))
+ax2.spines['left'].set_position(('outward', 10))
+ax2.yaxis.set_ticks_position('left')
+ax2.xaxis.set_ticks_position('bottom')
+
+ax2.set_xlim(left=-1,right=50)
+# legends and labels
+plt.legend(loc=1,frameon=False)
 
 leg = plt.gca().get_legend()
 ltext  = leg.get_texts()
