@@ -7,7 +7,8 @@ from network import  Network
 from MNISTdata.readMNIST  import readMNIST
 
 # parameters
-trainingEpochs = 10
+trainingEpochs = np.linspace(0,200,21)
+trainingEpochs[0] = 1.
 learningRate   = 0.2
 pairs = []
 voteWeights = np.zeros((10,45))
@@ -32,70 +33,72 @@ def getVote(currentOut):
     return np.where(voteUnits == voteUnits.max())[0]
 
 
-
 # read data 
 trainingData = readMNIST('training')
 testData = readMNIST('testing')
 
 # create network
 imgDims = trainingData.getImgDimensions()
-network = Network(imgDims[0]*imgDims[1],len(pairs),learningRate)
 
-print 'Train on %s samples, test on %s samples.' % (trainingData.getDSsize(), testData.getDSsize())
+for m in range(len(trainingEpochs)):
 
-learningProgress = []
-pairErrorRate = 45*[1]
-pairErrorRate.append(45*[1])
-# learning 
-for n in range(trainingEpochs):
-    nPairMissclassified = np.zeros(len(pairs))
-    nPairCorrectlyClassified = np.zeros(len(pairs))
-    nMissclassified = 0
-    nCorrectlyClassified = 0
-    for i in range(trainingData.getDSsize()):
-        img = trainingData.getBinImg(i)
+    network = Network(imgDims[0]*imgDims[1],len(pairs),learningRate)
+
+    #print 'Train on %s samples, test on %s samples.' % (trainingData.getDSsize(), testData.getDSsize())
+
+    learningProgress = []
+    pairErrorRate = 45*[1]
+    pairErrorRate.append(45*[1])
+    # learning
+    for n in range(int(trainingEpochs[m])):
+        nPairMissclassified = np.zeros(len(pairs))
+        nPairCorrectlyClassified = np.zeros(len(pairs))
+        nMissclassified = 0
+        nCorrectlyClassified = 0
+        for i in range(trainingData.getDSsize()):
+            img = trainingData.getBinImg(i)
+            currentOutput = network.getOutput(np.ndarray.flatten(img[1]))
+            vote = getVote(currentOutput)
+            #print vote, img[0]
+            if img[0] in vote:
+                nCorrectlyClassified += 1
+            else:
+                nMissclassified += 1
+            for j in range(len(pairs)):
+                if (img[0] in pairs[j]) and pairErrorRate[-1][j] != 0:
+                    #print img[0], pairs[j], j
+                    # check output for single binary discriminator unit
+                    evaluation = isDesiredOutput(currentOutput[j], img[0], pairs[j])
+                    if evaluation[0]:
+                        nPairCorrectlyClassified[j] += 1
+                    else:
+                        nPairMissclassified[j]+=1
+                        network.updateWeights(evaluation[1],np.ndarray.flatten(img[1]),outputUnit=j)
+        # save performance of learning epoch
+        learningProgress.append([nMissclassified,nCorrectlyClassified,nPairMissclassified,nPairCorrectlyClassified])
+        pairErrorRate.append(nPairMissclassified*100./(nPairMissclassified+nPairCorrectlyClassified))
+        #print 'Learning epoch %s/%s ..... %s %% error rate in %s samples with %s %% pair error rate' % ((n+1),trainingEpochs,nMissclassified*100./float(nCorrectlyClassified+nMissclassified),(nCorrectlyClassified+nMissclassified),nPairMissclassified*100./(nPairMissclassified+nPairCorrectlyClassified))
+        if nMissclassified == 0:
+            break
+
+    #pdb.set_trace()
+    # testing
+    nTestMissclassified = 0
+    nTestCorrectlyClassified = 0
+    numbersMissclassified = []
+    for i in range(testData.getDSsize()):
+        img = testData.getBinImg(i)
         currentOutput = network.getOutput(np.ndarray.flatten(img[1]))
         vote = getVote(currentOutput)
-        #print vote, img[0]
         if img[0] in vote:
-            nCorrectlyClassified += 1
+            nTestCorrectlyClassified += 1
         else:
-            nMissclassified += 1
-        for j in range(len(pairs)):
-            if (img[0] in pairs[j]) and pairErrorRate[-1][j] != 0:
-                #print img[0], pairs[j], j
-                # check output for single binary discriminator unit
-                evaluation = isDesiredOutput(currentOutput[j], img[0], pairs[j])
-                if evaluation[0]:
-                    nPairCorrectlyClassified[j] += 1
-                else:
-                    nPairMissclassified[j]+=1
-                    network.updateWeights(evaluation[1],np.ndarray.flatten(img[1]),outputUnit=j)
-    # save performance of learning epoch
-    learningProgress.append([nMissclassified,nCorrectlyClassified,nPairMissclassified,nPairCorrectlyClassified])
-    pairErrorRate.append(nPairMissclassified*100./(nPairMissclassified+nPairCorrectlyClassified))
-    print 'Learning epoch %s/%s ..... %s %% error rate in %s samples with %s %% pair error rate' % ((n+1),trainingEpochs,nMissclassified*100./float(nCorrectlyClassified+nMissclassified),(nCorrectlyClassified+nMissclassified),nPairMissclassified*100./(nPairMissclassified+nPairCorrectlyClassified))
-    if nMissclassified == 0:
-        break
+            nTestMissclassified += 1
+            numbersMissclassified.append(img[0])
 
-#pdb.set_trace()
-# testing
-nTestMissclassified = 0
-nTestCorrectlyClassified = 0
-numbersMissclassified = []
-for i in range(testData.getDSsize()):
-    img = testData.getBinImg(i)
-    currentOutput = network.getOutput(np.ndarray.flatten(img[1]))
-    vote = getVote(currentOutput)
-    if img[0] in vote:
-        nTestCorrectlyClassified += 1
-    else:
-        nTestMissclassified += 1
-        numbersMissclassified.append(img[0])
-
-print 'Test data set ..... %s %% error rate in %s samples' % (nTestMissclassified*100./float(nTestCorrectlyClassified+nTestMissclassified),(nTestCorrectlyClassified+nTestMissclassified))
+    #print 'Test data set ..... %s %% error rate in %s samples' % (nTestMissclassified*100./float(nTestCorrectlyClassified+nTestMissclassified),(nTestCorrectlyClassified+nTestMissclassified))
 
 
-pickle.dump( learningProgress, open( "learningProgress.p", "wb" ) )
-pickle.dump( [nTestMissclassified,nTestCorrectlyClassified], open("testPerformance.p", "wb") )
-pickle.dump( numbersMissclassified, open('numbersMissclassified.p', 'wb'))
+    pickle.dump( learningProgress, open( "learningProgress_%dtrainingEpochs.p" % trainingEpochs[m], "wb" ) )
+    pickle.dump( [nTestMissclassified,nTestCorrectlyClassified], open("testPerformance_%dtrainingEpochs.p" % trainingEpochs[m], "wb") )
+    #pickle.dump( numbersMissclassified, open('numbersMissclassified.p', 'wb'))
